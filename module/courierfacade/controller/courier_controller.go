@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/GoGerman/geo-task/module/courierfacade/service"
 	"github.com/gin-gonic/gin"
 )
 

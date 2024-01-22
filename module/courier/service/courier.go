@@ -2,6 +2,9 @@ package service
 
 import (
 	"context"
+	"github.com/GoGerman/geo-task/geo"
+	"github.com/GoGerman/geo-task/module/courier/models"
+	"github.com/GoGerman/geo-task/module/courier/storage"
 )
 
 // Направления движения курьера

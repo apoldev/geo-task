@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"github.com/GoGerman/geo-task/run"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
