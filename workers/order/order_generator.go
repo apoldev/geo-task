@@ -1,7 +1,9 @@
 package order
 
 import (
+	"context"
 	"github.com/GoGerman/geo-task/module/order/service"
+	"log"
 	"time"
 )
 
@@ -20,6 +22,37 @@ func NewOrderGenerator(orderService service.Orderer) *OrderGenerator {
 	return &OrderGenerator{orderService: orderService}
 }
 
+func (o *OrderGenerator) orderCreater(ctx context.Context) {
+
+	ticker := time.NewTicker(orderGenerationInterval)
+
+	for {
+		select {
+		case <-ctx.Done():
+			ticker.Stop()
+			return
+		case <-ticker.C:
+
+			cnt, err := o.orderService.GetCount(ctx)
+
+			if err != nil {
+				log.Printf("error while getting orders count: %v", err)
+				continue
+			}
+
+			if cnt >= maxOrdersCount {
+				continue
+			}
+
+			err = o.orderService.GenerateOrder(ctx)
+			if err != nil {
+				log.Printf("error while generating order: %v", err)
+			}
+		}
+	}
+
+}
+
 func (o *OrderGenerator) Run() {
 	// запускаем горутину, которая будет генерировать заказы не более чем раз в 10 миллисекунд
 	// не более 200 заказов используя константы orderGenerationInterval и maxOrdersCount
@@ -31,4 +64,6 @@ func (o *OrderGenerator) Run() {
 	// если при получении количества заказов произошла ошибка, то нужно вывести ее в лог
 	// внутри горутины нужно использовать select и time.NewTicker()
 
+	ctx := context.Background()
+	go o.orderCreater(ctx)
 }

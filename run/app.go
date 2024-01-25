@@ -5,8 +5,11 @@ import (
 	"github.com/GoGerman/geo-task/cache"
 	"github.com/GoGerman/geo-task/geo"
 	cservice "github.com/GoGerman/geo-task/module/courier/service"
+	storage2 "github.com/GoGerman/geo-task/module/courier/storage"
 	"github.com/GoGerman/geo-task/module/courierfacade/controller"
+	"github.com/GoGerman/geo-task/module/courierfacade/service"
 	oservice "github.com/GoGerman/geo-task/module/order/service"
+	"github.com/GoGerman/geo-task/module/order/storage"
 	"github.com/GoGerman/geo-task/router"
 	"github.com/GoGerman/geo-task/server"
 	"github.com/GoGerman/geo-task/workers/order"
@@ -47,7 +50,7 @@ func (a *App) Run() error {
 	disAllowedZones := []geo.PolygonChecker{geo.NewDisAllowedZone1(), geo.NewDisAllowedZone2()}
 
 	// инициализация хранилища заказов
-	orderStorage := ostorage.NewOrderStorage(rclient)
+	orderStorage := storage.NewOrderStorage(rclient)
 	// инициализация сервиса заказов
 	orderService := oservice.NewOrderService(orderStorage, allowedZone, disAllowedZones)
 
@@ -58,12 +61,12 @@ func (a *App) Run() error {
 	oldOrderCleaner.Run()
 
 	// инициализация хранилища курьеров
-	courierStorage := cstorage.NewCourierStorage(rclient)
+	courierStorage := storage2.NewCourierStorage(rclient)
 	// инициализация сервиса курьеров
 	courierSevice := cservice.NewCourierService(courierStorage, allowedZone, disAllowedZones)
 
 	// инициализация фасада сервиса курьеров
-	courierFacade := cfservice.NewCourierFacade(courierSevice, orderService)
+	courierFacade := service.NewCourierFacade(courierSevice, orderService)
 
 	// инициализация контроллера курьеров
 	courierController := controller.NewCourierController(courierFacade)

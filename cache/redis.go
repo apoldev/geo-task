@@ -1,11 +1,16 @@
 package cache
 
 import (
-	"github.com/go-redis/redis"
+	"fmt"
+	"github.com/redis/go-redis/v9"
 )
 
 func NewRedisClient(host, port string) *redis.Client {
 	// реализуйте создание клиента для Redis
 
-	return nil
+	return redis.NewClient(&redis.Options{
+		Addr: fmt.Sprintf("%s:%s", host, port),
+		DB:   0,
+	})
+
 }
